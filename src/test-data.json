@@ -1,0 +1,54 @@
+[
+    {
+    "title": "Inception",
+    "googleUsersRating": "91% liked this movie",
+    "googleUsersPercent": 91,
+    "imdbRating": 8.8,
+    "rottenTomatoesRating": 87,
+    "metadata": {
+      "duration": " 2h 42m",
+      "genre": " Action/Sci-fi ",
+      "rating": "PG-13",
+      "year": "2010"
+    }
+  },
+  {
+    "title": "Batman Begins",
+    "googleUsersRating": "86% liked this movie",
+    "googleUsersPercent": 86,
+    "imdbRating": 8.2,
+    "rottenTomatoesRating": 84,
+    "metadata": {
+      "duration": " 2h 20m",
+      "genre": " Action/Fantasy ",
+      "rating": "PG-13",
+      "year": "2005"
+    }
+  },
+  {
+    "title": "Toy Story 3",
+    "googleUsersRating": "95% liked this movie",
+    "googleUsersPercent": 95,
+    "imdbRating": 8.2,
+    "rottenTomatoesRating": 84,
+    "metadata": {
+      "duration": " 2h 20m",
+      "genre": " Action/Fantasy ",
+      "rating": "PG-13",
+      "year": "2005"
+    }
+  },
+  {
+    "title": "Dredd",
+    "googleUsersRating": "84% liked this movie",
+    "googleUsersPercent": 84,
+    "imdbRating": 8.9,
+    "rottenTomatoesRating": 84,
+    "metadata": {
+      "duration": " 2h 20m",
+      "genre": " Action/Fantasy ",
+      "rating": "PG-13",
+      "year": "2005"
+    }
+  }
+]
