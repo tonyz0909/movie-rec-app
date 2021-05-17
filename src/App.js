@@ -7,7 +7,6 @@ import Button from '@material-ui/core/Button';
 import Container from '@material-ui/core/Container';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Grid from '@material-ui/core/Grid';
-import TextField from '@material-ui/core/TextField';
 import Switch from '@material-ui/core/Switch';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 
@@ -16,6 +15,7 @@ import Filters from './components/Filters';
 import Menu from './components/Menu';
 import OutlinedCard from './components/OutlinedCard';
 import Trailer from './components/Trailer';
+import Search from './components/Search';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -30,8 +30,8 @@ function App() {
   const storedData = JSON.parse(localStorage.getItem('movieData'));
   const storedTrendingData = JSON.parse(localStorage.getItem('trendingMovies'));
   const [darkMode, setDarkMode] = useState(false);
-  const testData = require('./test-data.json');
-  const [title, setTitle] = useState("batman begins");
+  // const testData = require('./test-data.json');
+  // const [title, setTitle] = useState("batman begins");
   const [movieData, setMovieData] = useState(storedData || {}); // complete list of movies, test json - testData
   const [filteredMovies, setFilteredMovies] = useState(storedData || []); // filtered list of movies
   const [trendingMovies, setTrendingMovies] = useState(storedTrendingData || {});
@@ -57,30 +57,33 @@ function App() {
   useEffect(() => {
     // localStorage only accepts strings, so stringify before storing
     localStorage.setItem('movieData', JSON.stringify(movieData));
-    console.log(movieData);
+    // console.log(movieData);
   }, [movieData]);
 
   useEffect(() => {
     // localStorage only accepts strings, so stringify before storing
     localStorage.setItem('trendingMovies', JSON.stringify(trendingMovies));
-    console.log(trendingMovies);
+    // console.log(trendingMovies);
   }, [trendingMovies]);
 
-  useEffect(() => {
-    console.log(filteredMovies);
-  }, [filteredMovies]);
+  // useEffect(() => {
+  //   console.log(filteredMovies);
+  // }, [filteredMovies]);
 
   useEffect(() => {
     console.log(errors);
   }, [errors]);
 
   useEffect(() => {
-    console.log(darkMode);
-  }, [darkMode]);
-
-  useEffect(() => {
     useTrending ? updateFilteredMovies(trendingMovies) : updateFilteredMovies(movieData);
   }, [sortBy, filters, useTrending]);
+
+  let deleteMovie = (title) => {
+    let newMovieData = { ...movieData };
+    delete newMovieData[title];
+    setMovieData(newMovieData);
+    updateFilteredMovies(newMovieData);
+  }
 
   let updateFilteredMovies = (movieData) => {
     let unsortedMovies = Object.values(movieData);
@@ -146,9 +149,9 @@ function App() {
     return moviesData;
   }
 
-  let addMovie = (e) => {
+  let addMovie = (e, movieTitle) => {
     e.preventDefault();
-    getUrl(title, null).then(newMovie => {
+    getUrl(movieTitle, null).then(newMovie => {
       console.log(newMovie);
       // if movie hasn't already been added, add to movies list
       if (newMovie && !movieData[newMovie.title]) {
@@ -255,28 +258,26 @@ function App() {
       <Container maxWidth="xl" >
         <Box width="85%" style={{ margin: 'auto' }}>
           <div className={classes.root}>
-            <form className={classes.root} onSubmit={addMovie}>
-              <TextField id="outlined-basic" label="Movie Title" variant="outlined" size="small" onChange={(e) => setTitle(e.target.value)} />
-              <Button variant="contained" type="submit" color="primary">Search</Button>
-              <FormControlLabel
-                control={<Switch
-                  checked={darkMode}
-                  onChange={(e) => setDarkMode(e.target.checked)}
-                  color="primary"
-                  name="Dark Mode"
-                  inputProps={{ 'aria-label': 'secondary checkbox' }}
-                />}
-                label="Dark Mode"
-              />
-              <div>
-                <Filters
-                  filters={filters}
-                  setFilters={setFilters}
-                  sortingCriteria={sortingCriteria}
-                  sortBy={sortBy}
-                  setSortBy={setSortBy} />
-              </div>
-            </form>
+            <FormControlLabel
+              control={<Switch
+                checked={darkMode}
+                onChange={(e) => setDarkMode(e.target.checked)}
+                color="primary"
+                name="Dark Mode"
+                inputProps={{ 'aria-label': 'secondary checkbox' }}
+              />}
+              label="Dark Mode"
+              style={{float:'right'}}
+            />
+            <Search addMovie={addMovie} />
+            <div>
+              <Filters
+                filters={filters}
+                setFilters={setFilters}
+                sortingCriteria={sortingCriteria}
+                sortBy={sortBy}
+                setSortBy={setSortBy} />
+            </div>
             <Menu useTrending={useTrending} setUseTrending={setUseTrending} />
           </div>
           {/* <Button variant="contained" onClick={getTrendingMovies} color="primary">Get Trending Movies</Button> */}
@@ -284,7 +285,7 @@ function App() {
             {filteredMovies[0] && filteredMovies.map((movie) => {
               return (
                 <Grid item sm={12} md={6} lg={4}>
-                  <OutlinedCard movieData={movie} />
+                  <OutlinedCard movieData={movie} deleteMovie={deleteMovie} useTrending={useTrending} />
                 </Grid>
               )
             })}
