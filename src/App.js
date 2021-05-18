@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { makeStyles, createMuiTheme } from '@material-ui/core/styles';
 import { ThemeProvider } from '@material-ui/styles';
 import './App.css';
+import AppBar from '@material-ui/core/AppBar';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import Container from '@material-ui/core/Container';
@@ -9,6 +10,9 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import Grid from '@material-ui/core/Grid';
 import Switch from '@material-ui/core/Switch';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Toolbar from '@material-ui/core/Toolbar';
+import Typography from '@material-ui/core/Typography';
+import SearchIcon from '@material-ui/icons/Search';
 
 import Alert from './components/Alert';
 import Filters from './components/Filters';
@@ -16,12 +20,16 @@ import Menu from './components/Menu';
 import OutlinedCard from './components/OutlinedCard';
 import Trailer from './components/Trailer';
 import Search from './components/Search';
+import FiltersDialogue from './components/FiltersDialogue';
 
 const useStyles = makeStyles((theme) => ({
   root: {
     '& > *': {
       margin: theme.spacing(1),
     },
+  },
+  title: {
+    flexGrow: 1,
   },
 }));
 
@@ -45,6 +53,7 @@ function App() {
     gu: 0,
     duration: 240,
   });
+  const [filtersOpen, showFilters] = useState(false);
   const classes = useStyles();
 
   const palletType = darkMode ? 'dark' : 'light';
@@ -255,10 +264,11 @@ function App() {
     <ThemeProvider theme={theme}>
       {/* <ThemeProvider> */}
       <CssBaseline />
+      <Search addMovie={addMovie} darkMode={darkMode} setDarkMode={setDarkMode} showFilters={showFilters} />
       <Container maxWidth="xl" >
         <Box width="85%" style={{ margin: 'auto' }}>
           <div className={classes.root}>
-            <FormControlLabel
+            {/* <FormControlLabel
               control={<Switch
                 checked={darkMode}
                 onChange={(e) => setDarkMode(e.target.checked)}
@@ -267,17 +277,16 @@ function App() {
                 inputProps={{ 'aria-label': 'secondary checkbox' }}
               />}
               label="Dark Mode"
-              style={{float:'right'}}
-            />
-            <Search addMovie={addMovie} />
-            <div>
+              style={{ float: 'right' }}
+            /> */}
+            {/* <div>
               <Filters
                 filters={filters}
                 setFilters={setFilters}
                 sortingCriteria={sortingCriteria}
                 sortBy={sortBy}
                 setSortBy={setSortBy} />
-            </div>
+            </div> */}
             <Menu useTrending={useTrending} setUseTrending={setUseTrending} />
           </div>
           {/* <Button variant="contained" onClick={getTrendingMovies} color="primary">Get Trending Movies</Button> */}
@@ -293,6 +302,14 @@ function App() {
           {useTrending && <Button onClick={getTrendingMovies} color="primary">Update Trending Movies</Button>}
           <Alert errors={errors} />
         </Box>
+        <FiltersDialogue
+          open={filtersOpen}
+          close={() => showFilters(false)}
+          filters={filters}
+          setFilters={setFilters}
+          sortingCriteria={sortingCriteria}
+          sortBy={sortBy}
+          setSortBy={setSortBy} />
       </Container>
     </ThemeProvider>
   );
