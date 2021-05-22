@@ -1,24 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
-import Button from '@material-ui/core/Button';
 import Container from '@material-ui/core/Container';
-import Avatar from '@material-ui/core/Avatar';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemAvatar from '@material-ui/core/ListItemAvatar';
-import ListItemText from '@material-ui/core/ListItemText';
-import DialogTitle from '@material-ui/core/DialogTitle';
 import Dialog from '@material-ui/core/Dialog';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import Grid from '@material-ui/core/Grid';
-import PersonIcon from '@material-ui/icons/Person';
-import AddIcon from '@material-ui/icons/Add';
 import Typography from '@material-ui/core/Typography';
 import { blue } from '@material-ui/core/colors';
 import IconButton from '@material-ui/core/IconButton';
 import PlayCircleOutlineIcon from '@material-ui/icons/PlayCircleOutline';
+import LinearProgress from '@material-ui/core/LinearProgress';
 
 const emails = ['username@gmail.com', 'user02@gmail.com'];
 const useStyles = makeStyles({
@@ -69,16 +61,50 @@ export function SimpleDialog(props) {
             if (movieInfo.results[0]) setSummary(movieInfo.results[0].overview);
         }
     }
+    let getTrailer = async () => {
+        if (open == true) {
+            setLoading(true);
+            setTrailer(null);
+            const parser = new DOMParser();
+            let query = 'https://www.google.com/search?q=' + encodeURIComponent(props.movieData['title']).replace(/%20/g, "+") + "+trailer&tbm=vid";
+            console.log(query);
+
+            let response = await fetch(query);
+            let data = await response.text();
+            const doc = parser.parseFromString(data, "text/html");
+            let trailerUrl = await getTrailerUrl(doc);
+            setTrailer(trailerUrl);
+            setTimeout(() => setLoading(false), 200); // give time for Youtube iframe to load
+        }
+    }
+
+    let getTrailerUrl = async (movieHTML) => {
+        try {
+            let trailerUrl = movieHTML.getElementsByClassName('rGhul IHSDrd').length > 0 ? movieHTML.getElementsByClassName('rGhul IHSDrd')[0].getAttribute('href') : null;
+            console.log(trailerUrl);
+            if (trailerUrl != null) {
+                trailerUrl = 'https://www.youtube.com/embed/' + trailerUrl.split("v=")[1];
+            }
+            return trailerUrl;
+        } catch (e) {
+            console.error(e);
+            return null;
+        }
+    }
 
     useEffect(getSummary, [open]);
+    useEffect(getTrailer, [open]);
 
     const [summary, setSummary] = useState(null);
+    const [trailer, setTrailer] = useState(null);
+    const [isLoading, setLoading] = useState(false);
 
     return (
         <Dialog onClose={handleClose} aria-labelledby="simple-dialog-title" open={open}
             maxWidth="lg">
+            {/* { isLoading && <LinearProgress />} */}
             <iframe width="853" height="480" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen;"
-                src={props.url}>
+                src={trailer}>
             </iframe>
             <Card className={classes.root}>
                 <CardContent>
@@ -111,7 +137,7 @@ export function SimpleDialog(props) {
                             </Grid>
                         </Grid>
                     </Container>
-                    <hr/>
+                    <hr />
                     <Typography variant="h6" component="h2">
                         Other Information
                     </Typography>
@@ -168,7 +194,7 @@ export default function Trailer(props) {
             <IconButton color="primary" aria-label="upload picture" component="span" style={{ position: 'absolute', marginTop: '50px', marginLeft: '-80px' }} onClick={handleClickOpen}>
                 <PlayCircleOutlineIcon fontSize="large" />
             </IconButton>
-            <SimpleDialog open={open} onClose={handleClose} url={props.url} movieData={props.movieData} />
+            <SimpleDialog open={open} onClose={handleClose} movieData={props.movieData} />
         </div>
     );
 }

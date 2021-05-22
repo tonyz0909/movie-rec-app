@@ -1,20 +1,13 @@
 import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
-import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
 import Link from '@material-ui/core/Link';
-import MoreVertIcon from '@material-ui/icons/MoreVert';
-import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
 import CancelIcon from '@material-ui/icons/Cancel';
 import IconButton from '@material-ui/core/IconButton';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
-import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import Trailer, { SimpleDialog } from './Trailer';
-import PlayCircleOutlineIcon from '@material-ui/icons/PlayCircleOutline';
 
 const useStyles = makeStyles({
   root: {
@@ -35,7 +28,7 @@ const useStyles = makeStyles({
 
 let getColor = (rating, isIMDB) => {
   if (isIMDB == true && rating == 10 || rating == 100) {
-    return 'blue';
+    return '#3a5ad1';
   } else if (isIMDB == true && rating > 7.5 || rating > 85) {
     return '#31b830'; // '#77DD76';
   } else if (isIMDB == true && rating > 6 || rating > 70) {
@@ -45,24 +38,6 @@ let getColor = (rating, isIMDB) => {
   }
 }
 
-const options = [
-  'None',
-  'Atria',
-  'Callisto',
-  'Dione',
-  'Ganymede',
-  'Hangouts Call',
-  'Luna',
-  'Oberon',
-  'Phobos',
-  'Pyxis',
-  'Sedna',
-  'Titania',
-  'Triton',
-  'Umbriel',
-];
-
-const ITEM_HEIGHT = 48;
 
 export default function OutlinedCard(props) {
   const classes = useStyles();
@@ -71,18 +46,6 @@ export default function OutlinedCard(props) {
   const guColor = getColor(props.movieData['googleUsersPercent'], false);
   const imdbColor = getColor(props.movieData['imdbRating'], true);
   const rtColor = getColor(props.movieData['rottenTomatoesRating'], false);
-
-  // menu config
-  // const [anchorEl, setAnchorEl] = useState(null);
-  // const open = Boolean(anchorEl);
-
-  // const handleClick = (event) => {
-  //   setAnchorEl(event.currentTarget);
-  // };
-
-  // const handleClose = () => {
-  //   setAnchorEl(null);
-  // };
 
   const [showClose, setClose] = useState('none');
 
@@ -103,7 +66,7 @@ export default function OutlinedCard(props) {
         style={{ position: 'relative' }}
         onMouseEnter={() => setClose('block')}
         onMouseLeave={() => setClose('none')}>
-        {!props.useTrending &&
+        {!props.browsing &&
           <IconButton
             aria-label="more"
             aria-controls="long-menu"
@@ -115,39 +78,9 @@ export default function OutlinedCard(props) {
           </IconButton>}
         <Grid container spacing={4}>
           <Grid item xs={8}>
-            {/* <Typography className={classes.title} color="textSecondary" gutterBottom>
-          Word of the Day
-        </Typography> */}
             <Link href="#" onClick={(e) => { e.preventDefault(); handleClickOpen(); }} color="inherit">
               <Typography variant="h6" component="h2">
                 {props.movieData['title']}
-                {/* <IconButton
-                  aria-label="more"
-                  aria-controls="long-menu"
-                  aria-haspopup="true"
-                  onClick={handleClick}
-                >
-                  <ArrowForwardIosIcon fontSize="small" />
-                </IconButton>
-                <Menu
-                  id="long-menu"
-                  anchorEl={anchorEl}
-                  keepMounted
-                  open={open}
-                  onClose={handleClose}
-                  PaperProps={{
-                    style: {
-                      maxHeight: ITEM_HEIGHT * 4.5,
-                      width: '20ch',
-                    },
-                  }}
-                >
-                  {options.map((option) => (
-                    <MenuItem key={option} selected={option === 'Pyxis'} onClick={handleClose}>
-                      {option}
-                    </MenuItem>
-                  ))}
-                </Menu> */}
               </Typography>
               <Typography className={classes.pos} color="textSecondary">
                 {Object.values(props.movieData['metadata']).join(" ‧ ")}
@@ -155,10 +88,14 @@ export default function OutlinedCard(props) {
             </Link>
             <Grid container spacing={2} style={{ marginTop: '1.5em' }}>
               <Grid item xs={4} style={{ textAlign: 'center' }}>
-                <span style={{ color: guColor }}>
-                  {props.movieData['googleUsersPercent']}%<br />
+                {props.movieData['googleUsersPercent'] > 0 ?
+                  <span style={{ color: guColor }}>
+                    {props.movieData['googleUsersPercent']}%<br />
                 Google Users
                 </span>
+                  :
+                  <span>N/A <br /> Google Users</span>
+                }
               </Grid>
               <Grid item xs={4} style={{ textAlign: 'center' }}>
                 <span style={{ color: imdbColor }}>
@@ -176,17 +113,16 @@ export default function OutlinedCard(props) {
           </Grid>
           <Grid item xs={4} >
             <div>
-              <img
-                src={imgSrc}
-                alt="new"
-                width={67 * 1.6}
-                height={100 * 1.6}
-                style={{ height: '100%' }}
-              />
-              {/* <IconButton color="primary" aria-label="upload picture" component="span" style={{ position: 'absolute', marginTop: '50px', marginLeft: '-80px' }} onClick={handleClickOpen}>
-                <PlayCircleOutlineIcon fontSize="large" />
-              </IconButton> */}
-              <SimpleDialog open={open} onClose={handleClose} url={props.movieData['trailerUrl']} movieData={props.movieData} />
+              <Link href="#" onClick={(e) => { e.preventDefault(); handleClickOpen(); }} color="inherit">
+                <img
+                  src={imgSrc}
+                  alt="new"
+                  width={67 * 1.6}
+                  height={100 * 1.6}
+                  style={{ height: '100%' }}
+                />
+              </Link>
+              <SimpleDialog open={open} onClose={handleClose} movieData={props.movieData} />
             </div>
           </Grid>
         </Grid>
