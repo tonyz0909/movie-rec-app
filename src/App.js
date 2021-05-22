@@ -2,23 +2,19 @@ import React, { useState, useEffect } from 'react';
 import { makeStyles, createMuiTheme } from '@material-ui/core/styles';
 import { ThemeProvider } from '@material-ui/styles';
 import './App.css';
-import AppBar from '@material-ui/core/AppBar';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import Container from '@material-ui/core/Container';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Grid from '@material-ui/core/Grid';
-import Switch from '@material-ui/core/Switch';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
-import SearchIcon from '@material-ui/icons/Search';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import RefreshIcon from '@material-ui/icons/Refresh';
+import Select from '@material-ui/core/Select';
+import MenuItem from '@material-ui/core/MenuItem';
 
 import Alert from './components/Alert';
-import Filters from './components/Filters';
 import Menu from './components/Menu';
 import OutlinedCard from './components/OutlinedCard';
-import Trailer from './components/Trailer';
 import Search from './components/Search';
 import FiltersDialogue from './components/FiltersDialogue';
 
@@ -33,18 +29,31 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+const queryMap = {
+  'top': 'https://api.themoviedb.org/3/movie/top_rated?api_key=210fc31dd8bed65f0aaba2bf322a7627&language=en-US&page=1',
+  'trending': 'https://api.themoviedb.org/3/trending/movie/week?api_key=210fc31dd8bed65f0aaba2bf322a7627',
+  'popular': 'https://api.themoviedb.org/3/movie/popular?api_key=210fc31dd8bed65f0aaba2bf322a7627&language=en-US&page=1'
+}
+
 function App() {
   // localStorage.removeItem('movieData');
+  // retrieve cached data
   const storedData = JSON.parse(localStorage.getItem('movieData'));
-  const storedTrendingData = JSON.parse(localStorage.getItem('trendingMovies'));
-  const [darkMode, setDarkMode] = useState(false);
-  // const testData = require('./test-data.json');
-  // const [title, setTitle] = useState("batman begins");
-  const [movieData, setMovieData] = useState(storedData || {}); // complete list of movies, test json - testData
+  const storedBrowseData = JSON.parse(localStorage.getItem('trending'));
+
+  // movie data
+  const [movieData, setMovieData] = useState(storedData || {}); // complete list of movies
   const [filteredMovies, setFilteredMovies] = useState(storedData || []); // filtered list of movies
-  const [trendingMovies, setTrendingMovies] = useState(storedTrendingData || {});
-  const [useTrending, setUseTrending] = useState(false);
+  const [tmdbMovies, setTmdbMovies] = useState(storedBrowseData || {}); // list of tmdb movies
+  const [browseMode, setBrowseMode] = useState('trending');
+  const [browsing, setBrowsing] = useState(false); // whether 'browse' tab is selected
+
+  // other config
+  const [darkMode, setDarkMode] = useState(false);
   const [errors, setErrors] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+
+  // filtering configuration
   const [sortBy, setSortBy] = useState("none");
   const sortingCriteria = ["Search Order", "Google Users", "IMDB", "Rotten Tomatoes"];
   const [filters, setFilters] = useState({
@@ -54,8 +63,9 @@ function App() {
     duration: 240,
   });
   const [filtersOpen, showFilters] = useState(false);
-  const classes = useStyles();
 
+  // theming
+  const classes = useStyles();
   const palletType = darkMode ? 'dark' : 'light';
   const theme = createMuiTheme({
     palette: {
@@ -63,30 +73,30 @@ function App() {
     },
   });
 
+  // update cache for search movies
   useEffect(() => {
     // localStorage only accepts strings, so stringify before storing
     localStorage.setItem('movieData', JSON.stringify(movieData));
-    // console.log(movieData);
   }, [movieData]);
 
+  // update cache for browse movies
   useEffect(() => {
-    // localStorage only accepts strings, so stringify before storing
-    localStorage.setItem('trendingMovies', JSON.stringify(trendingMovies));
-    // console.log(trendingMovies);
-  }, [trendingMovies]);
+    let moviesToShow = JSON.parse(localStorage.getItem(browseMode)) || {};
+    setTmdbMovies(moviesToShow);
+    updateFilteredMovies(moviesToShow);
+  }, [browseMode]);
 
+  // update data to display on grid of cards
+  useEffect(() => {
+    browsing ? updateFilteredMovies(tmdbMovies) : updateFilteredMovies(movieData);
+  }, [sortBy, filters, browsing]);
+
+  // for debug purposes
   // useEffect(() => {
-  //   console.log(filteredMovies);
-  // }, [filteredMovies]);
+  //   console.error(errors);
+  // }, [errors]);
 
-  useEffect(() => {
-    console.log(errors);
-  }, [errors]);
-
-  useEffect(() => {
-    useTrending ? updateFilteredMovies(trendingMovies) : updateFilteredMovies(movieData);
-  }, [sortBy, filters, useTrending]);
-
+  // remove movie from cache 
   let deleteMovie = (title) => {
     let newMovieData = { ...movieData };
     delete newMovieData[title];
@@ -94,6 +104,7 @@ function App() {
     updateFilteredMovies(newMovieData);
   }
 
+  // sort movies and update cards
   let updateFilteredMovies = (movieData) => {
     let unsortedMovies = Object.values(movieData);
     // deep copy first before sorting
@@ -107,7 +118,7 @@ function App() {
       comparator = (a, b) => b.rottenTomatoesRating - a.rottenTomatoesRating;
     }
     if (comparator) movieDataSorted.sort(comparator);
-    else movieDataSorted.reverse(); // sort by recency added
+    else movieDataSorted.reverse(); // sort by recently added
 
     // filter
     movieDataSorted = movieDataSorted.filter(movie => {
@@ -116,48 +127,38 @@ function App() {
     setFilteredMovies(movieDataSorted);
   }
 
-  let getTrendingMovies = async () => {
-    // https://developers.themoviedb.org/3/discover/movie-discover
-    // fetch("https://api.themoviedb.org/3/discover/movie?api_key=210fc31dd8bed65f0aaba2bf322a7627&language=en-US&sort_by=popularity.desc&include_adult=false&include_video=false&page=1&year=2021&with_watch_monetization_types=flatrate")
-    //   .then(response => response.json())
-    //   .then(data => {
-    //     console.log(data.results.map(result => result.title));
-    //   })
-    //   .catch(err => {
-    //     console.error(err);
-    //   });
-
-    //https://api.themoviedb.org/3/trending/movie/week?api_key=210fc31dd8bed65f0aaba2bf322a7627
-
-    // setUseTrending(true);
-    let response = await fetch("https://api.themoviedb.org/3/trending/movie/week?api_key=210fc31dd8bed65f0aaba2bf322a7627");
+  let getTmdbMovies = async () => {
+    setIsLoading(true);
+    let response = await fetch(queryMap[browseMode]);
     let trending = await response.json();
-    console.log(trending);
     trending = await getMoviesData(trending);
-    console.log(trending);
-    setTrendingMovies(trending);
+    setTmdbMovies(trending);
     updateFilteredMovies(trending);
+    localStorage.setItem(browseMode, JSON.stringify(trending));
+    setIsLoading(false);
   }
 
   let getMoviesData = async (trending) => {
-    let moviesData = trendingMovies;
+    let moviesData = {};
     for (let i = 0; i < 20; i++) {
-      console.log(trendingMovies);
-      console.log(trending.results[i].title);
-      console.log(trendingMovies[trending.results[i].title]);
-      if (!(trending.results[i].title in trendingMovies)) {
+      // console.log(tmdbMovies);
+      // console.log(trending.results[i].title);
+      // console.log(tmdbMovies[trending.results[i].title]);
+      if (!(trending.results[i].title in tmdbMovies)) {
         let imageUrl = `https://image.tmdb.org/t/p/w500/${trending.results[i]['poster_path']}`
         let newMovie = await getUrl(trending.results[i].title, imageUrl);
         if (newMovie) {
           moviesData[trending.results[i].title] = newMovie;
         }
       } else {
-        console.log('movie already in cache');
+        // console.log('using cache for movie: ' + trending.results[i].title);
+        moviesData[trending.results[i].title] = tmdbMovies[trending.results[i].title];
       }
     }
     return moviesData;
   }
 
+  // add a searched movie
   let addMovie = (e, movieTitle) => {
     e.preventDefault();
     getUrl(movieTitle, null).then(newMovie => {
@@ -173,9 +174,10 @@ function App() {
     });
   }
 
+  // google scrape movie by title
   let getUrl = async (movieTitle, imageUrl) => {
     const parser = new DOMParser();
-    let query = 'https://www.google.com/search?q=' + encodeURIComponent(movieTitle).replace(/%20/g, "+"); // + "+movie";
+    let query = 'https://www.google.com/search?q=' + encodeURIComponent(movieTitle).replace(/%20/g, "+");
     console.log(query);
 
     let response = await fetch(query);
@@ -186,23 +188,14 @@ function App() {
   }
 
   let processMovieData = async (movieHTML, movieTitle, imageUrl) => {
-    // TODO: dynamically retrieve rating type instead of hardcoding (e.g. imdb = 0th index)
-    // TODO: error handling (e.g. entering invalid movie name)
-    // if (!movieHTML.getElementsByClassName('srBp4 Vrkhme')[0]) {
-    //   alert("movie not found: " + movieTitle);
-    //   return null;
-    // }
-    // console.log(movieHTML);
     try {
 
       let googleUsersRating = movieHTML.getElementsByClassName('srBp4 Vrkhme').length > 0 ? movieHTML.getElementsByClassName('srBp4 Vrkhme')[0].childNodes[0].data : null; // not all movies have google user ratings
       let imdbRating = movieHTML.querySelectorAll('span.gsrt')[0].innerHTML;
       let rottenTomatoesRating = movieHTML.querySelectorAll('span.gsrt')[1].innerHTML;
       let metadata = (movieHTML.getElementsByClassName('wx62f PZPZlf x7XAkb')[0] || movieHTML.querySelectorAll('div.wwUB2c.PZPZlf span')[0]).outerText.split("‧");
-      let title = (movieHTML.querySelectorAll('span.u9DLmf')[0] || movieHTML.querySelectorAll('h2.qrShPb.kno-ecr-pt.PZPZlf.mfMhoc span')[0]).innerHTML;
+      let title = (movieHTML.querySelectorAll('span.u9DLmf')[0] || movieHTML.querySelectorAll('h2.qrShPb.kno-ecr-pt.PZPZlf.mfMhoc span')[0]).innerHTML.replace('&amp;', '&');
       imageUrl = imageUrl || (movieHTML.querySelectorAll('g-img.ivg-i.PZPZlf').length > 0 ? movieHTML.querySelectorAll('g-img.ivg-i.PZPZlf')[0].getAttribute("data-lpage") : null); // not all movies have image thumbnails
-      let trailerUrl = movieHTML.querySelectorAll('a.WpKAof').length > 0 ? movieHTML.querySelectorAll('a.WpKAof')[0].getAttribute("href") : null;
-      // console.log(Array.from(movieHTML.querySelectorAll('div.liYKde.g.VjDLd div.eA0Zlc.ivg-i.PtaMgb.PZPZlf img.rISBZc.M4dUYb')).map(e => e.getAttribute("src")));
 
       // backup image url option (alternate format)
       if (imageUrl == null) {
@@ -210,17 +203,11 @@ function App() {
         let response = await fetch(`https://api.themoviedb.org/3/search/movie?api_key=210fc31dd8bed65f0aaba2bf322a7627&language=en-US&query=${query}&page=1&include_adult=false`);
         let json = await response.json();
         if (json.results.length > 0) {
-          imageUrl = `https://image.tmdb.org/t/p/w500/${json.results[0]['poster_path']}`;
+          if (json.results[0].title == title) {
+            imageUrl = `https://image.tmdb.org/t/p/w500/${json.results[0]['poster_path']}`;
+          }
         }
       }
-
-      // console.log(trailerUrl);
-      if (trailerUrl != null) {
-        console.log(trailerUrl.split("v="));
-        trailerUrl = 'https://www.youtube.com/embed/' + trailerUrl.split("v=")[1];
-      }
-
-      // console.log(imageUrl);
 
       // convert ratings into numbers
       imdbRating = parseFloat(imdbRating.slice(0, 3));
@@ -251,7 +238,7 @@ function App() {
         durationMins,
         title,
         imageUrl,
-        trailerUrl
+        // trailerUrl
       };
     } catch (e) {
       console.error(e);
@@ -262,44 +249,47 @@ function App() {
 
   return (
     <ThemeProvider theme={theme}>
-      {/* <ThemeProvider> */}
       <CssBaseline />
-      <Search addMovie={addMovie} darkMode={darkMode} setDarkMode={setDarkMode} showFilters={showFilters} />
+      <Search
+        addMovie={addMovie}
+        darkMode={darkMode}
+        setDarkMode={setDarkMode}
+        showFilters={showFilters} />
       <Container maxWidth="xl" >
         <Box width="85%" style={{ margin: 'auto' }}>
           <div className={classes.root}>
-            {/* <FormControlLabel
-              control={<Switch
-                checked={darkMode}
-                onChange={(e) => setDarkMode(e.target.checked)}
-                color="primary"
-                name="Dark Mode"
-                inputProps={{ 'aria-label': 'secondary checkbox' }}
-              />}
-              label="Dark Mode"
-              style={{ float: 'right' }}
-            /> */}
-            {/* <div>
-              <Filters
-                filters={filters}
-                setFilters={setFilters}
-                sortingCriteria={sortingCriteria}
-                sortBy={sortBy}
-                setSortBy={setSortBy} />
-            </div> */}
-            <Menu useTrending={useTrending} setUseTrending={setUseTrending} />
+            <Menu browsing={browsing} setBrowsing={setBrowsing} />
           </div>
-          {/* <Button variant="contained" onClick={getTrendingMovies} color="primary">Get Trending Movies</Button> */}
+          {browsing &&
+            <Box style={{ textAlign: 'center' }}>
+              <Button onClick={getTmdbMovies} color="primary" disabled={isLoading} style={{ float: 'left' }}><RefreshIcon /></Button>
+              <Select
+                value={browseMode}
+                onChange={(e) => setBrowseMode(e.target.value)}
+                displayEmpty
+                className={classes.selectEmpty}
+                inputProps={{ 'aria-label': 'Without label' }}
+              >
+                <MenuItem value={'trending'}>Trending</MenuItem>
+                <MenuItem value={'popular'}>Popular (TMDb)</MenuItem>
+                <MenuItem value={'top'}>Top Rated</MenuItem>
+              </Select>
+            </Box>
+          }
+          {isLoading &&
+            <Box style={{ textAlign: 'center', marginTop: '2em' }}>
+              <CircularProgress size={50} />
+            </Box>
+          }
           <Grid container spacing={4}>
             {filteredMovies[0] && filteredMovies.map((movie) => {
               return (
                 <Grid item sm={12} md={6} lg={4}>
-                  <OutlinedCard movieData={movie} deleteMovie={deleteMovie} useTrending={useTrending} />
+                  <OutlinedCard movieData={movie} deleteMovie={deleteMovie} browsing={browsing} />
                 </Grid>
               )
             })}
           </Grid>
-          {useTrending && <Button onClick={getTrendingMovies} color="primary">Update Trending Movies</Button>}
           <Alert errors={errors} />
         </Box>
         <FiltersDialogue
