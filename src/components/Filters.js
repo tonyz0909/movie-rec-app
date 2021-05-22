@@ -50,6 +50,17 @@ export default function Filters(props) {
         },
     ];
 
+    const marksDuration = [
+        {
+            value: 0,
+            label: '0',
+        },
+        {
+            value: 240,
+            label: '240',
+        },
+    ];
+
     const [anchorEl, setAnchorEl] = React.useState(null);
     const [filters, setFilters] = useState(props.filters);
 
@@ -163,7 +174,7 @@ export default function Filters(props) {
                         min={0}
                         max={300}
                         step={10}
-                        marks={marks}
+                        marks={marksDuration}
                         style={{ maxWidth: '200px' }}
                         valueLabelDisplay="auto"
                         onChange={(e, newValue) => setFilters({ ...filters, duration: newValue })}
