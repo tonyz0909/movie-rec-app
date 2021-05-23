@@ -12,7 +12,6 @@ import IconButton from '@material-ui/core/IconButton';
 import PlayCircleOutlineIcon from '@material-ui/icons/PlayCircleOutline';
 import LinearProgress from '@material-ui/core/LinearProgress';
 
-const emails = ['username@gmail.com', 'user02@gmail.com'];
 const useStyles = makeStyles({
     avatar: {
         backgroundColor: blue[100],
@@ -57,7 +56,7 @@ export function SimpleDialog(props) {
             let url = `https://api.themoviedb.org/3/search/movie?api_key=210fc31dd8bed65f0aaba2bf322a7627&language=en-US&query=${props.movieData['title']}&page=1`
             let response = await fetch(url);
             let movieInfo = await response.json();
-            console.log(movieInfo);
+            // console.log(movieInfo);
             if (movieInfo.results[0]) setSummary(movieInfo.results[0].overview);
         }
     }
@@ -81,7 +80,7 @@ export function SimpleDialog(props) {
     let getTrailerUrl = async (movieHTML) => {
         try {
             let trailerUrl = movieHTML.getElementsByClassName('rGhul IHSDrd').length > 0 ? movieHTML.getElementsByClassName('rGhul IHSDrd')[0].getAttribute('href') : null;
-            console.log(trailerUrl);
+            // console.log(trailerUrl);
             if (trailerUrl != null) {
                 trailerUrl = 'https://www.youtube.com/embed/' + trailerUrl.split("v=")[1];
             }
@@ -103,7 +102,7 @@ export function SimpleDialog(props) {
         <Dialog onClose={handleClose} aria-labelledby="simple-dialog-title" open={open}
             maxWidth="lg">
             {/* { isLoading && <LinearProgress />} */}
-            <iframe width="853" height="480" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen;"
+            <iframe width="853" height="480" style={{maxWidth:"100%"}} frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen;"
                 src={trailer}>
             </iframe>
             <Card className={classes.root}>
@@ -168,7 +167,6 @@ export function SimpleDialog(props) {
 SimpleDialog.propTypes = {
     onClose: PropTypes.func.isRequired,
     open: PropTypes.bool.isRequired,
-    selectedValue: PropTypes.string.isRequired,
 };
 
 export default function Trailer(props) {
