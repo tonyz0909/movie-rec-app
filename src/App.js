@@ -162,7 +162,7 @@ function App() {
   let addMovie = (e, movieTitle) => {
     e.preventDefault();
     getUrl(movieTitle, null).then(newMovie => {
-      console.log(newMovie);
+      // console.log(newMovie);
       // if movie hasn't already been added, add to movies list
       if (newMovie && !movieData[newMovie.title]) {
         let title = newMovie.title;
@@ -178,7 +178,7 @@ function App() {
   let getUrl = async (movieTitle, imageUrl) => {
     const parser = new DOMParser();
     let query = 'https://www.google.com/search?q=' + encodeURIComponent(movieTitle).replace(/%20/g, "+");
-    console.log(query);
+    // console.log(query);
 
     let response = await fetch(query);
     let data = await response.text();

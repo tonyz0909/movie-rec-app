@@ -1,6 +1,4 @@
 import React, { useState } from 'react';
-import Button from '@material-ui/core/Button';
-import TextField from '@material-ui/core/TextField';
 import { fade, makeStyles, createMuiTheme } from '@material-ui/core/styles';
 
 import AppBar from '@material-ui/core/AppBar';
@@ -8,19 +6,13 @@ import Toolbar from '@material-ui/core/Toolbar';
 import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
 import InputBase from '@material-ui/core/InputBase';
-import Badge from '@material-ui/core/Badge';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Switch from '@material-ui/core/Switch';
 import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
-import MenuIcon from '@material-ui/icons/Menu';
 import SearchIcon from '@material-ui/icons/Search';
-import AccountCircle from '@material-ui/icons/AccountCircle';
 import Brightness2Icon from '@material-ui/icons/Brightness2';
-import MailIcon from '@material-ui/icons/Mail';
-import NotificationsIcon from '@material-ui/icons/Notifications';
 import MoreIcon from '@material-ui/icons/MoreVert';
-import SettingsIcon from '@material-ui/icons/Settings';
 import FilterListIcon from '@material-ui/icons/FilterList';
 
 const useStyles = makeStyles((theme) => ({
@@ -192,7 +184,7 @@ export default function Search(props) {
                             />
                         </form>
                     </div>
-                    <IconButton aria-label="show 4 new mails" color="inherit" onClick={() => props.showFilters(true)}>
+                    <IconButton color="inherit" onClick={() => props.showFilters(true)}>
                         <FilterListIcon />
                     </IconButton>
                     <div className={classes.grow} />
