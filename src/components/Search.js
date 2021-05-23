@@ -28,7 +28,12 @@ const useStyles = makeStyles((theme) => ({
         flexGrow: 1,
     },
     menuButton: {
-        marginRight: theme.spacing(2),
+        marginRight: '0.25em',
+        marginBottom: '0.25em',
+        display: 'none',
+        [theme.breakpoints.up('sm')]: {
+            display: 'block',
+        },
     },
     title: {
         display: 'none',
@@ -140,22 +145,7 @@ export default function Search(props) {
             open={isMobileMenuOpen}
             onClose={handleMobileMenuClose}
         >
-            {/* <MenuItem>
-                <IconButton aria-label="show 4 new mails" color="inherit">
-                    <Badge badgeContent={4} color="secondary">
-                        <MailIcon />
-                    </Badge>
-                </IconButton>
-                <p>Messages</p>
-            </MenuItem>
-            <MenuItem>
-                <IconButton aria-label="show 11 new notifications" color="inherit">
-                    <Badge badgeContent={11} color="secondary">
-                        <NotificationsIcon />
-                    </Badge>
-                </IconButton>
-                <p>Notifications</p>
-            </MenuItem> */}
+            
             <MenuItem onClick={() => props.setDarkMode(!props.darkMode)}>
                 <IconButton
                     aria-label="account of current user"
@@ -172,10 +162,6 @@ export default function Search(props) {
 
     return (
         <div className={classes.grow}>
-            {/* <form className={classes.root} onSubmit={(e) => props.addMovie(e, searchText)}>
-            <TextField id="outlined-basic" label="Movie Title" variant="outlined" size="small" onChange={(e) => setSearchText(e.target.value)} />
-            <Button variant="contained" type="submit" color="primary">Search</Button>
-        </form> */}
             <AppBar position="static">
                 <Toolbar>
                     {/* <IconButton
@@ -186,6 +172,7 @@ export default function Search(props) {
                     >
                         <MenuIcon />
                     </IconButton> */}
+                    <img src="logo.png" height="25px" width="25px" className={classes.menuButton}/>
                     <Typography className={classes.title} variant="h6" noWrap style={{cursor:'default'}}>
                         MovieFinder
                     </Typography>
@@ -210,21 +197,6 @@ export default function Search(props) {
                     </IconButton>
                     <div className={classes.grow} />
                     <div className={classes.sectionDesktop}>
-                        {/* <IconButton aria-label="show 17 new notifications" color="inherit">
-                            <Badge badgeContent={17} color="secondary">
-                                <NotificationsIcon />
-                            </Badge>
-                        </IconButton> */}
-                        {/* <IconButton
-                            edge="end"
-                            aria-label="account of current user"
-                            aria-controls={menuId}
-                            aria-haspopup="true"
-                            onClick={handleProfileMenuOpen}
-                            color="inherit"
-                        >
-                            <AccountCircle />
-                        </IconButton> */}
                         <FormControlLabel
                             control={<Switch
                                 checked={props.darkMode}
