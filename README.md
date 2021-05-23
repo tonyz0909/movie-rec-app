@@ -11,7 +11,8 @@ Filter through movies using custom filtering and sorting criteria.
 ![Trailer Screen](images/trailer.png)
 Watch trailers and view additional movie information by clicking on a movie.
 
-![Mobile Dashboard](images/mobile.png)
+<img src="images/mobile.png" alt="Mobile Dashboard" width="200" style="display:block; margin:auto"/>
+
 Mobile-compatible and supports dark mode as well.
 
 ## Technologies Used
