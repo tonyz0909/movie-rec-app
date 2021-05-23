@@ -119,7 +119,7 @@ export default function FiltersDialogue(props) {
                     <Grid container spacing={4} style={{ marginLeft: '0.5em' }}>
                         <Grid item xs={12} sm={12} md={6}>
                             <Typography id="discrete-slider-always2" color="textSecondary" gutterBottom>
-                                Google Users Score {'>'}
+                                Google Users Score &#8805;
                             </Typography>
                             <Slider
                                 value={filters['gu']}
@@ -135,7 +135,7 @@ export default function FiltersDialogue(props) {
                         </Grid>
                         <Grid item xs={12} sm={12} md={6}>
                             <Typography id="discrete-slider-always" color="textSecondary" gutterBottom>
-                                IMDb Score {'>'}
+                                IMDb Score &#8805;
                             </Typography>
                             <Slider
                                 value={filters['imdb']}
@@ -151,7 +151,7 @@ export default function FiltersDialogue(props) {
                         </Grid>
                         <Grid item xs={12} sm={12} md={6}>
                             <Typography id="discrete-slider-always1" color="textSecondary" gutterBottom>
-                                Rotten Tomatoes Score {'>'}
+                                Rotten Tomatoes Score &#8805;
                             </Typography>
                             <Slider
                                 value={filters['rt']}
@@ -167,7 +167,7 @@ export default function FiltersDialogue(props) {
                         </Grid>
                         <Grid item xs={12} sm={12} md={6}>
                             <Typography id="discrete-slider-always1" color="textSecondary" gutterBottom>
-                                Duration {'<'} (mins)
+                                Duration &#8804; (mins)
                     </Typography>
                             <Slider
                                 value={filters['duration']}
