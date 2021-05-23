@@ -284,7 +284,7 @@ function App() {
           <Grid container spacing={4}>
             {filteredMovies[0] && filteredMovies.map((movie) => {
               return (
-                <Grid item sm={12} md={6} lg={4}>
+                <Grid item sm={12} md={6} lg={4} key={movie.title}>
                   <OutlinedCard movieData={movie} deleteMovie={deleteMovie} browsing={browsing} />
                 </Grid>
               )

@@ -105,6 +105,7 @@ export default function FiltersDialogue(props) {
                             {props.sortingCriteria.map(criteria => {
                                 return <FormControlLabel
                                     value={criteria}
+                                    key={criteria}
                                     control={<Radio color="primary" />}
                                     checked={sortBy == criteria}
                                     label={criteria}
