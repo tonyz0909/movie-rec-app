@@ -8,9 +8,6 @@ import CardContent from '@material-ui/core/CardContent';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import { blue } from '@material-ui/core/colors';
-import IconButton from '@material-ui/core/IconButton';
-import PlayCircleOutlineIcon from '@material-ui/icons/PlayCircleOutline';
-import LinearProgress from '@material-ui/core/LinearProgress';
 
 const useStyles = makeStyles({
     avatar: {
@@ -24,15 +21,15 @@ const useStyles = makeStyles({
 });
 
 let getColor = (rating, isIMDB) => {
-    if (isIMDB == true && rating == 10 || rating == 100) {
-        return 'blue';
-    } else if (isIMDB == true && rating > 7.5 || rating > 85) {
+    if ((isIMDB == true && rating == 10) || rating == 100) {
+        return '#3a5ad1';
+      } else if ((isIMDB == true && rating > 7.5) || rating > 85) {
         return '#31b830';
-    } else if (isIMDB == true && rating > 6 || rating > 70) {
+      } else if ((isIMDB == true && rating > 6) || rating > 70) {
         return 'orange';
-    } else {
+      } else {
         return '#FF6962';
-    }
+      }
 }
 
 export function SimpleDialog(props) {
@@ -168,31 +165,3 @@ SimpleDialog.propTypes = {
     onClose: PropTypes.func.isRequired,
     open: PropTypes.bool.isRequired,
 };
-
-export default function Trailer(props) {
-    const [open, setOpen] = React.useState(false);
-
-    const handleClickOpen = () => {
-        setOpen(true);
-    };
-
-    const handleClose = (value) => {
-        setOpen(false);
-    };
-
-    return (
-        <div>
-            <img
-                src={props.imgSrc}
-                alt="new"
-                width={67 * 1.6}
-                height={100 * 1.6}
-                style={{ height: '100%' }}
-            />
-            <IconButton color="primary" aria-label="upload picture" component="span" style={{ position: 'absolute', marginTop: '50px', marginLeft: '-80px' }} onClick={handleClickOpen}>
-                <PlayCircleOutlineIcon fontSize="large" />
-            </IconButton>
-            <SimpleDialog open={open} onClose={handleClose} movieData={props.movieData} />
-        </div>
-    );
-}

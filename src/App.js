@@ -110,11 +110,11 @@ function App() {
     // deep copy first before sorting
     let movieDataSorted = JSON.parse(JSON.stringify(unsortedMovies));
     let comparator = null;
-    if (sortBy == 'IMDB') {
+    if (sortBy === 'IMDB') {
       comparator = (a, b) => b.imdbRating - a.imdbRating;
-    } else if (sortBy == 'Google Users') {
+    } else if (sortBy === 'Google Users') {
       comparator = (a, b) => b.googleUsersPercent - a.googleUsersPercent;
-    } else if (sortBy == 'Rotten Tomatoes') {
+    } else if (sortBy === 'Rotten Tomatoes') {
       comparator = (a, b) => b.rottenTomatoesRating - a.rottenTomatoesRating;
     }
     if (comparator) movieDataSorted.sort(comparator);
@@ -200,10 +200,10 @@ function App() {
       // backup image url option (alternate format)
       if (imageUrl == null) {
         let query = encodeURIComponent(movieTitle).replace(/%20/g, "+");
-        let response = await fetch(`https://api.themoviedb.org/3/search/movie?api_key=210fc31dd8bed65f0aaba2bf322a7627&language=en-US&query=${query}&page=1&include_adult=false`);
+        let response = await fetch(`https://api.themoviedb.org/3/search/movie?api_key=${process.env.REACT_APP_TMDB_API_KEY}&language=en-US&query=${query}&page=1&include_adult=false`);
         let json = await response.json();
         if (json.results.length > 0) {
-          if (json.results[0].title == title) {
+          if (json.results[0].title === title) {
             imageUrl = `https://image.tmdb.org/t/p/w500/${json.results[0]['poster_path']}`;
           }
         }

@@ -7,7 +7,7 @@ import CancelIcon from '@material-ui/icons/Cancel';
 import IconButton from '@material-ui/core/IconButton';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
-import Trailer, { SimpleDialog } from './Trailer';
+import { SimpleDialog } from './Trailer';
 
 const useStyles = makeStyles({
   root: {
