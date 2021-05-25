@@ -30,9 +30,9 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const queryMap = {
-  'top': 'https://api.themoviedb.org/3/movie/top_rated?api_key=210fc31dd8bed65f0aaba2bf322a7627&language=en-US&page=1',
-  'trending': 'https://api.themoviedb.org/3/trending/movie/week?api_key=210fc31dd8bed65f0aaba2bf322a7627',
-  'popular': 'https://api.themoviedb.org/3/movie/popular?api_key=210fc31dd8bed65f0aaba2bf322a7627&language=en-US&page=1'
+  'top': `https://api.themoviedb.org/3/movie/top_rated?api_key=${process.env.REACT_APP_TMDB_API_KEY}&language=en-US&page=1`,
+  'trending': `https://api.themoviedb.org/3/trending/movie/week?api_key=${process.env.REACT_APP_TMDB_API_KEY}`,
+  'popular': `https://api.themoviedb.org/3/movie/popular?api_key=${process.env.REACT_APP_TMDB_API_KEY}&language=en-US&page=1`
 }
 
 function App() {

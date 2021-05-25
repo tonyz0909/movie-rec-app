@@ -53,7 +53,7 @@ export function SimpleDialog(props) {
 
     let getSummary = async () => {
         if (open == true) {
-            let url = `https://api.themoviedb.org/3/search/movie?api_key=210fc31dd8bed65f0aaba2bf322a7627&language=en-US&query=${props.movieData['title']}&page=1`
+            let url = `https://api.themoviedb.org/3/search/movie?api_key=${process.env.REACT_APP_TMDB_API_KEY}&language=en-US&query=${props.movieData['title']}&page=1`
             let response = await fetch(url);
             let movieInfo = await response.json();
             // console.log(movieInfo);
