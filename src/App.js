@@ -279,6 +279,7 @@ function App() {
           {isLoading &&
             <Box style={{ textAlign: 'center', marginTop: '2em' }}>
               <CircularProgress size={50} />
+              <p>Loading...This may take a few moments the first time...</p>
             </Box>
           }
           <Grid container spacing={4}>
